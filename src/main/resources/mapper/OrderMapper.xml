@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.uts.business.mapper.OrderMapper">
+
+    <!--  根据用户ID，查询用户订单信息  -->
+    <select id="selectByUserId" resultType="org.uts.dto.order.OrderDto">
+        SELECT
+        `ID`,
+        `ORDER_ID`,
+        `USER_ID`,
+        `PRODUCT_ID`,
+        `STATUS`,
+        `PLATFORM`,
+        `CREATE_TIME`,
+        `UPDATE_TIME`
+        FROM
+        `order`
+        WHERE
+        1 = 1
+        <if test="userId!=null">
+            AND `USER_ID`=#{userId}
+        </if>
+        ORDER BY UPDATE_TIME DESC
+    </select>
+
+    <!--  新增订单信息  -->
+    <insert id="addOrder" keyColumn="ID" keyProperty="id" parameterType="org.uts.dto.order.OrderDto"
+            useGeneratedKeys="true">
+        INSERT INTO `order`
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                `ID`,
+            </if>
+            <if test="orderId != null and orderId != ''">
+                `ORDER_ID`,
+            </if>
+            <if test="userId != null">
+                `USER_ID`,
+            </if>
+            <if test="productId != null">
+                `PRODUCT_ID`,
+            </if>
+            <if test="status != null">
+                `STATUS`,
+            </if>
+            <if test="platform != null">
+                `PLATFORM`,
+            </if>
+            `CREATE_TIME`,
+            `UPDATE_TIME`
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id},
+            </if>
+            <if test="orderId != null and orderId != ''">
+                #{orderId},
+            </if>
+            <if test="userId != null">
+                #{userId},
+            </if>
+            <if test="productId != null">
+                #{productId},
+            </if>
+            <if test="status != null">
+                #{status},
+            </if>
+            <if test="platform != null">
+                #{platform},
+            </if>
+            NOW(),
+            NOW()
+        </trim>
+    </insert>
+
+
+
+
+
+</mapper>
