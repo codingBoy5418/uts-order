@@ -15,9 +15,9 @@ import java.util.List;
 public interface OrderMapper {
 
     /*
-     * 根据商品ID，查询用户订单信息
+     * 查询用户订单信息
      */
-    public List<OrderDto> selectByUserId(Long userId);
+    public List<OrderDto> selectOrder(OrderDto orderDto);
 
     /*
      * 新增订单信息

@@ -1,6 +1,7 @@
 package org.uts.exception;
 
 
+import org.uts.global.errorCode.BusinessErrorCode;
 import org.uts.global.errorCode.ErrorCode;
 
 /**
@@ -21,6 +22,10 @@ public class BusinessException extends BaseException {
 
     public BusinessException(ErrorCode errorCode){
         super(errorCode);
+    }
+
+    public BusinessException(BusinessErrorCode businessErrorCode){
+        super(businessErrorCode.getCode(), businessErrorCode.getErrorMsg());
     }
 
 }

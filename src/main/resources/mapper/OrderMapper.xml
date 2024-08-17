@@ -3,7 +3,7 @@
 <mapper namespace="org.uts.business.mapper.OrderMapper">
 
     <!--  根据用户ID，查询用户订单信息  -->
-    <select id="selectByUserId" resultType="org.uts.dto.order.OrderDto">
+    <select id="selectOrder" resultType="org.uts.dto.order.OrderDto">
         SELECT
         `ID`,
         `ORDER_ID`,
@@ -19,6 +19,9 @@
         1 = 1
         <if test="userId!=null">
             AND `USER_ID`=#{userId}
+        </if>
+        <if test="orderId!=null">
+            AND `ORDER_ID`=#{orderId}
         </if>
         ORDER BY UPDATE_TIME DESC
     </select>
