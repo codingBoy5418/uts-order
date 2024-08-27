@@ -3,6 +3,7 @@ package org.uts.business.service.order.impl;
 import com.alibaba.dubbo.config.annotation.Service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.uts.business.mapper.OrderMapper;
 import org.uts.dto.order.OrderDto;
