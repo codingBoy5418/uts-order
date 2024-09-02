@@ -7,9 +7,12 @@
         SELECT
         `ID`,
         `ORDER_ID`,
+        `TRADE_NUMBER`,
         `USER_ID`,
         `PRODUCT_ID`,
+        `PRODUCT_NAME`,
         `STATUS`,
+        `PRICE`,
         `PLATFORM`,
         `CREATE_TIME`,
         `UPDATE_TIME`
@@ -37,14 +40,23 @@
             <if test="orderId != null and orderId != ''">
                 `ORDER_ID`,
             </if>
+            <if test="tradeNumber != null and tradeNumber != ''">
+                `TRADE_NUMBER`,
+            </if>
             <if test="userId != null">
                 `USER_ID`,
             </if>
             <if test="productId != null">
                 `PRODUCT_ID`,
             </if>
+            <if test="productName != null">
+                `PRODUCT_NAME`,
+            </if>
             <if test="status != null">
                 `STATUS`,
+            </if>
+            <if test="price != null">
+                `PRICE`,
             </if>
             <if test="platform != null">
                 `PLATFORM`,
@@ -59,14 +71,23 @@
             <if test="orderId != null and orderId != ''">
                 #{orderId},
             </if>
+            <if test="tradeNumber != null and tradeNumber != ''">
+                #{tradeNumber},
+            </if>
             <if test="userId != null">
                 #{userId},
             </if>
             <if test="productId != null">
                 #{productId},
             </if>
+            <if test="productName != null">
+                #{productName},
+            </if>
             <if test="status != null">
                 #{status},
+            </if>
+            <if test="price != null">
+                #{price},
             </if>
             <if test="platform != null">
                 #{platform},
@@ -76,8 +97,20 @@
         </trim>
     </insert>
 
-
-
-
+    <!--  更新订单信息  -->
+    <update id="updateOrder" parameterType="org.uts.dto.order.OrderDto">
+    UPDATE `order`
+    <set>
+        <if test="status != null">
+            STATUS=#{status},
+        </if>
+        <if test="tradeNumber != null">
+            TRADE_NUMBER=#{tradeNumber},
+        </if>
+        UPDATE_TIME=NOW()
+        WHERE
+        ORDER_ID=#{orderId}
+    </set>
+    </update>
 
 </mapper>

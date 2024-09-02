@@ -6,14 +6,17 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.uts.exception.BusinessException;
 import org.uts.global.constant.*;
 import org.uts.mq.message.AddOrderMessage;
 import org.uts.mq.message.AddOrderResultMessage;
 import org.uts.mq.message.MQMessage;
+import org.uts.mq.message.OrderDelayMessage;
 import org.uts.service.order.OrderService;
 import org.uts.utils.SnowflakeUtils;
 import org.uts.vo.order.OrderVo;
 
+import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -40,11 +43,14 @@ public class OrderHandler {
         //创建订单并入库
         OrderVo orderVo = new OrderVo(null,
                 String.valueOf(snowflakeUtils.nextId()),
+                null,
                 addOrderMsg.getUserId(),
                 addOrderMsg.getSeckillId(),
+                addOrderMsg.getProductName(),
                 OrderStatusEnum.WAIT_TO_PAY_STATUS.getStatus(),
                 null,
                 PlatformTypeEnum.WEB_CLIENT_TYPE.getId(),
+                addOrderMsg.getPrice(),
                 null,
                 null,
                 null);
@@ -78,7 +84,29 @@ public class OrderHandler {
 
         }
 
+    }
 
+    /*
+     处理订单超时消息
+     */
+    public void dealWithOrderDelayResult(OrderDelayMessage orderTimeoutMessage) {
+
+        try {
+            OrderVo orderVo = new OrderVo();
+            orderVo.setOrderId(orderTimeoutMessage.getOrderId());
+            orderVo.setUserId(orderTimeoutMessage.getUserId());
+            OrderVo orderVoFromDB = orderService.selectOrder(orderVo).get(0);
+            if(Objects.equals(OrderStatusEnum.WAIT_TO_PAY_STATUS.getStatus(), orderVoFromDB.getStatus())
+                    || Objects.equals(OrderStatusEnum.SYSTEM_CANCEL_STATUS.getStatus(), orderVoFromDB.getStatus())
+                    || Objects.equals(OrderStatusEnum.HAND_CANCEL_STATUS.getStatus(), orderVoFromDB.getStatus())
+            ){
+                orderVo.setStatus(OrderStatusEnum.SYSTEM_CANCEL_STATUS.getStatus());
+                orderService.updateOrder(orderVo);
+            }
+        } catch (BusinessException businessException) {
+            log.error("Update Order Stock failed, orderId: {}", orderTimeoutMessage.getOrderId());
+            businessException.printStackTrace();
+        }
 
     }
 }

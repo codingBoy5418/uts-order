@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.uts.business.mapper.RefundMapper">
+
+    <!--  根据订单ID，查询退款流水信息  -->
+    <select id="selectRefund" resultType="org.uts.dto.order.RefundDto">
+        SELECT
+        `ID`,
+        `ORDER_ID`,
+        `TRADE_NUMBER`,
+        `MONEY`,
+        `REASON`,
+        `REFUND_TIME`
+        FROM
+        `refund`
+        WHERE
+        1 = 1
+        <if test="orderId != null and orderId != ''">
+            AND `ORDER_ID`=#{orderId}
+        </if>
+    </select>
+
+    <!--  新增订单信息  -->
+    <insert id="addRefund" keyColumn="ID" keyProperty="id" parameterType="org.uts.dto.order.RefundDto"
+            useGeneratedKeys="true">
+        INSERT INTO `refund`
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                `ID`,
+            </if>
+            <if test="orderId != null and orderId != ''">
+                `ORDER_ID`,
+            </if>
+            <if test="tradeNumber != null and tradeNumber != ''">
+                `TRADE_NUMBER`,
+            </if>
+            <if test="money != null">
+                `MONEY`,
+            </if>
+            <if test="reason != null and reason != ''">
+                `REASON`,
+            </if>
+                `REFUND_TIME`
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id},
+            </if>
+            <if test="orderId != null and orderId != ''">
+                #{orderId},
+            </if>
+            <if test="tradeNumber != null and tradeNumber != ''">
+                #{tradeNumber},
+            </if>
+            <if test="money != null">
+                #{money},
+            </if>
+            <if test="reason != null and reason != ''">
+                #{reason},
+            </if>
+            NOW()
+        </trim>
+    </insert>
+
+</mapper>

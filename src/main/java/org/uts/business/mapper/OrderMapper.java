@@ -24,4 +24,8 @@ public interface OrderMapper {
      */
     public Integer addOrder(OrderDto orderDto);
 
+    /*
+     * 更新订单信息
+     */
+    public Integer updateOrder(OrderDto orderDto);
 }

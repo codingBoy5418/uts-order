@@ -12,6 +12,7 @@ import org.uts.global.constant.MessageType;
 import org.uts.mq.handler.OrderHandler;
 import org.uts.mq.message.AddOrderMessage;
 import org.uts.mq.message.MQMessage;
+import org.uts.mq.message.OrderDelayMessage;
 
 import java.util.Date;
 
@@ -38,8 +39,13 @@ public class MQReceiver {
         String msg = new String(message.getBody());
         log.info("{}，接收到MQ消息，消息内容：{}", new Date().toString(), msg);
         MQMessage mqMessage = JSON.parseObject(msg, MQMessage.class);
+        //处理添加订单消息
         if(MessageType.ADD_ORDER_MESSAGE_TYPE.equals(mqMessage.getType())) {
             orderHandler.dealWithAddOrder(JSON.parseObject(mqMessage.getBody(), AddOrderMessage.class));
+        }
+        //处理订单超时消息
+        if(MessageType.ORDER_DELAY_MESSAGE_TYPE.equals(mqMessage.getType())) {
+            orderHandler.dealWithOrderDelayResult(JSON.parseObject(mqMessage.getBody(), OrderDelayMessage.class));
         }
     }
 }

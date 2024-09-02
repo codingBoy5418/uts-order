@@ -3,14 +3,16 @@ package org.uts.business.service.order.impl;
 import com.alibaba.dubbo.config.annotation.Service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.uts.business.mapper.OrderMapper;
 import org.uts.dto.order.OrderDto;
 import org.uts.exception.BusinessException;
+import org.uts.global.constant.OrderStatusEnum;
 import org.uts.global.errorCode.BusinessErrorCode;
 import org.uts.service.order.OrderService;
+import org.uts.service.order.RefundService;
 import org.uts.vo.order.OrderVo;
+import org.uts.vo.order.RefundVo;
 
 import java.util.List;
 import java.util.Objects;
@@ -27,6 +29,8 @@ public class OrderServiceImpl implements OrderService {
     @Autowired
     private OrderMapper orderMapper;
 
+    @Autowired
+    private RefundService refundService;
 
     /*
      * 根据用户ID，查询用户订单信息
@@ -66,5 +70,29 @@ public class OrderServiceImpl implements OrderService {
         }
 
         return OrderVo.convertDtoToVo(orderDtoList);
+    }
+
+    /*
+     * 更新订单信息
+     */
+    @Override
+    public Integer updateOrder(OrderVo orderVo) {
+        OrderDto orderDto = OrderVo.convertVoToDto(orderVo);
+        return orderMapper.updateOrder(orderDto);
+    }
+
+    /*
+     * 退款
+     */
+    @Override
+    public boolean refund(RefundVo refundVo) throws BusinessException {
+        //更新订单状态为: 已退款
+        OrderVo orderVo = new OrderVo();
+        orderVo.setOrderId(refundVo.getOrderId());
+        orderVo.setStatus(OrderStatusEnum.REFUNDED_STATUS.getStatus());
+        this.updateOrder(orderVo);
+        //创建退款流水
+        refundService.addRefund(refundVo);
+        return true;
     }
 }
